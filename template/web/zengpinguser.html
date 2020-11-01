@@ -1,0 +1,88 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<link rel="stylesheet" type="text/css" href="../addons/zh_cjdianc/template/public/ygcsslist.css">
+<style type="text/css">
+    .yg5_key>div{float: left;line-height: 34px;}
+    .store_td1{height: 45px;}
+    .store_list_img{width: 60px;height: 60px;}
+    .yg5_tabel{border-color: #e5e5e5;outline: 1px solid #e5e5e5;}
+    .yg5_tr2>td{padding: 10px 15px;border: 1px solid #e5e5e5;text-align:center;}
+    .yg5_tr1>th{
+        border: 1px solid #e5e5e5;
+        padding-left: 15px;
+        background-color: #FAFAFA;
+        font-weight: bold;
+        text-align: center;
+    }
+    .yg5_btn{background-color: #EEEEEE;color: #333;border: 1px solid #E4E4E4;border-radius: 6px;width: 100px;height: 34px;}
+    /*#frame-2{display: block;visibility: visible;}*/
+</style>
+<ul class="nav nav-tabs">
+    <span class="ygxian"></span>
+    <div class="ygdangq">当前位置:</div>
+    <li class="active"><a href="{php echo $this->createWebUrl('shop')}">赠品列表</a></li>
+    <li><a href="{php echo $this->createWebUrl('addshop')}">添加赠品</a></li>
+</ul>
+<div class="main">
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            礼品消费记录
+        </div>
+        <div class="panel-body" style="padding: 0px 15px;">
+            <div class="row">
+                <table class="yg5_tabel col-md-12">
+                    <tr class="yg5_tr1">
+                        <th class="col-md-2">昵称</th>
+                        <th class="col-md-2">头像</th>
+                        <th class="col-md-2">手机号</th>
+                        <th class="col-md-2">礼品名称</th>
+                        <th class="col-md-2">数量</th>
+                        <th class="col-md-2">领取时间</th>
+                        <th class="col-md-2">消费时间</th>
+                        <th class="col-md-2">礼品范围</th>
+                        <th class="col-md-2">礼品发布时间</th>
+                        <th class="col-md-2">礼品过期时间</th>
+                    </tr>
+                    {loop $list $row}
+                    <tr class="yg5_tr2">
+                        <td><div class="type-parent">{$row['name']}</div></td>
+                        <td><div class="type-parent"><img height="40" src="{media $row['head']}">&nbsp;&nbsp;</div></td>
+                        <td><div class="type-parent">{$row['user_tel']}&nbsp;&nbsp;</div></td>
+                        <td>{$row['giftName']}</td>
+                        <td><div class="type-parent">1&nbsp;&nbsp;</div></td>
+                        <td><div class="type-parent">{$row['create_time']}&nbsp;&nbsp;</div></td>
+                        <td><div class="type-parent">{$row['update_time']}&nbsp;&nbsp;</div></td>
+                        {if $row['giftLevel']==1}
+                        <td>新人礼品</td>
+                        {elseif $row['giftLevel']==2}
+                        <td>会员礼品</td>
+                        {elseif $row['giftLevel']==3}
+                        <td>普通礼品</td>
+                        {/if}
+                        <td>$row['start_time']</td>
+                        <td>$row['end_time']</td>
+                    </tr>
+
+                    {/loop}
+                              {if empty($list)}
+          <tr class="yg5_tr2">
+            <td colspan="8">
+              暂无增品
+          </td>
+      </tr> 
+      {/if} 
+                </table>
+            </div>
+        </form>
+    </div>
+    {$pager}
+</div>
+<script type="text/javascript">
+    $(function(){
+        $("#frame-2").show();
+        $("#yframe-2").addClass("wyactive");
+        // $("#frame-2").addClass("in");
+    })
+</script>
+{template 'common/footer'}

@@ -1,0 +1,193 @@
+{template 'public/header'}
+{template 'public/comhead'}
+<link rel="stylesheet" type="text/css" href="../addons/zh_cjdianc/template/public/ygcss.css">
+<style type="text/css">
+    input[type="radio"] + label::before {
+        content: "\a0"; /*不换行空格*/
+        display: inline-block;
+        vertical-align: middle;
+        font-size: 16px;
+        width: 1em;
+        height: 1em;
+        margin-right: .4em;
+        border-radius: 50%;
+        border: 2px solid #ddd;
+        text-indent: .15em;
+        line-height: 1; 
+    }
+    input[type="radio"]:checked + label::before {
+        background-color: #44ABF7;
+        background-clip: content-box;
+        padding: .1em;
+        border: 2px solid #44ABF7;
+    }
+    input[type="radio"] {
+        position: absolute;
+        clip: rect(0, 0, 0, 0);
+    }
+    .ygmargin{margin-top: 10px;color: #999;}
+</style>
+<ul class="nav nav-tabs">
+    <span class="ygxian"></span>
+    <div class="ygdangq">当前位置:</div>    
+    <li><a href="{php echo $this->createWebUrl('shop')}">赠品列表</a></li>
+    <li class="active"><a href="{php echo $this->createWebUrl('addshop')}">添加赠品</a></li>
+</ul>
+<div class="main">
+    <form action="" method="post" class="form-horizontal form" enctype="multipart/form-data">
+        <!--<input type="hidden" name="parentid" value="{$parent['id']}" />-->
+        <div class="panel panel-default ygdefault">
+            <div class="panel-heading wyheader">
+                赠品编辑
+            </div>
+            <div class="panel-body">
+                
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">标题</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="title" class="form-control" value="{$info['title']}" />
+                    </div>
+                </div>               
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">图片</label>
+                    <div class="col-sm-9">
+                        {php echo tpl_form_field_image('logo', $info['logo'])}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">每人张数</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="giftPersonNum" class="form-control" value="{$info['giftPersonNum']}" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">发放总数</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="giftTotalNum" class="form-control" value="{$info['giftTotalNum']}" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">排序</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="orderby" class="form-control" value="{$info['orderby']}" />
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">赠送会员等级</label>
+                    <div class="col-sm-9">
+                        <label class="radio-inline">
+                            <input type="radio" id="emailwyGift1" name="giftLevel" value="1" {if $info['giftLevel']==1 || empty($info['giftLevel'])}checked{/if} />
+                            <label for="emailwyGift1">新人赠送</label>
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" id="emailwyGift2" name="giftLevel" value="2" {if $info['giftLevel']==2}checked{/if} />
+                            <label for="emailwyGift2">初次成为会员赠送</label>
+                        </label>
+
+                        <label class="radio-inline">
+                            <input type="radio" id="emailwyGift3" name="giftLevel" value="3" {if $info['giftLevel']==3}checked{/if} />
+                            <label for="emailwyGift3">普通赠送（每份礼品只能领取1份）</label>
+                        </label>
+
+                    </div>
+                </div>
+
+
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">核销打印地址</label>
+                    <div class="col-sm-9">
+                        <label class="radio-inline">
+                            <input type="radio" id="emailwyGiftAdd1" name="giftAddress" value="1" {if $info['giftAddress']==1 || empty($info['giftAddress'])}checked{/if} />
+                            <label for="emailwyGiftAdd1">客房部</label>
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" id="emailwyGiftAdd2" name="giftAddress" value="2" {if $info['giftAddress']==2}checked{/if} />
+                            <label for="emailwyGiftAdd2">KTV</label>
+                        </label>
+
+                        <label class="radio-inline">
+                            <input type="radio" id="emailwyGiftAdd3" name="giftAddress" value="3" {if $info['giftAddress']==3}checked{/if} />
+                            <label for="emailwyGiftAdd3">餐厅</label>
+                        </label>
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">有效期：</label>
+                <div  class="col-sm-9" class="input-group" style="width: 100px;margin-left: 20px;">
+                    {php echo tpl_form_field_daterange('time',array('start' =>$list['start_time'], 'end' =>$list['end_time']));}
+                </div><!-- /input-group -->
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-12 col-sm-3 col-md-2 control-label">是否禁用</label>
+                    <div class="col-sm-9">
+                        <label class="radio-inline">
+                            <input type="radio" id="emailwy1" name="status" value="1" {if $info['status']==1 || empty($info['status'])}checked{/if} />
+                            <label for="emailwy1">启用</label>
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" id="emailwy2" name="status" value="2" {if $info['status']==2}checked{/if} />
+                            <label for="emailwy2">禁用</label>
+                        </label>    
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="form-group">
+            <input type="submit" name="submit" value="提交" class="btn col-lg-3" style="color: white;background-color: #44ABF7;"/>
+            <input type="hidden" name="token" value="{$_W['token']}" />
+            <input type="hidden" name="id" value="{$info['id']}" />
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    $(function(){
+        // $("#frame-2").addClass("in");
+        $("#frame-2").show();
+        $("#yframe-2").addClass("wyactive");
+        "{if $info}"
+            "{if $info['item']=='1'}"
+                $('.ygyi2').hide();
+                $('.ygyi3').hide();
+            "{/if}"
+            "{if $info['item']=='2'}"
+                $('.ygyi1').hide();
+                $('.ygyi3').hide();
+            "{/if}" 
+            "{if $info['item']=='3'}"
+                $('.ygyi1').hide();
+                $('.ygyi2').hide();
+            "{/if}"            
+        "{else}"
+            $('.ygyi2').hide();
+            $('.ygyi3').hide();
+        "{/if}"
+        $("select#type").change(function(){
+            if($(this).val()=='1'){
+                console.log($(this).val())
+                $(".ygyi1").show();
+                $(".ygyi2").hide();
+                $(".ygyi3").hide();  
+            }else if($(this).val()=='2'){
+                console.log($(this).val())
+                $(".ygyi1").hide();
+                $(".ygyi2").show();
+                $(".ygyi3").hide();  
+            }else if($(this).val()=='3'){
+                console.log($(this).val())
+                $(".ygyi1").hide();
+                $(".ygyi2").hide();
+                $(".ygyi3").show();  
+            }
+         })
+    })
+</script>
+{template 'common/footer'}
