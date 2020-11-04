@@ -31,6 +31,7 @@ if(checksubmit('submit2')){
       if($res){
        $data['money']=$_GPC['reply'];
        $data['user_id']=$_GPC['id2'];
+       $data['state']=2;
        if($_GPC['reply']<0){
             $data['type']=2;
             $data['note']='后台扣分';

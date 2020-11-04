@@ -112,6 +112,7 @@ if ($_GPC['op'] == 'cancel') {
 			$tk['money'] = $type['money'];
 			$tk['user_id'] = $type['user_id'];
 			$tk['type'] = 1;
+			$tk['state'] = 2;
 			$tk['note'] = '取消订单';
 			$tk['time'] = date('Y-m-d H:i:s');
 			$tkres = pdo_insert('cjdc_qbmx', $tk);
@@ -289,6 +290,7 @@ if ($_GPC['op'] == 'jjjd') {
 			$tk['money'] = $type['money'];
 			$tk['user_id'] = $type['user_id'];
 			$tk['type'] = 1;
+			$tk['state'] = 2;
 			$tk['note'] = '订单拒绝';
 			$tk['time'] = date('Y-m-d H:i:s');
 			$tkres = pdo_insert('cjdc_qbmx', $tk);
@@ -565,6 +567,7 @@ if ($_GPC['op'] == 'refund') {
 				$tk['order_id'] = $type['id'];
 				$tk['user_id'] = $type['user_id'];
 				$tk['type'] = 1;
+				$tk['state'] = 2;
 				$tk['note'] = '订单退款';
 				$tk['time'] = date('Y-m-d H:i:s');
 				$tkres = pdo_insert('cjdc_qbmx', $tk);

@@ -180,20 +180,20 @@ class Zh_cjdiancModuleWxapp extends WeModuleWxapp {
             }
         }
 
-            $sql = " select * from" . tablename('cjdc_type') . " where  isKtvType={$isKtvTable}  and uniacid={$_W['uniacid']} and store_id={$_GPC['store_id']} and is_open=1 and id in(select type_id from" . tablename('cjdc_goods') . " where uniacid={$_W['uniacid']} and is_show=1 and type !={$_GPC['type']} and store_id={$_GPC['store_id']}) order by order_by asc";
-            $type = pdo_fetchall($sql);
-            $list = pdo_getall('cjdc_goods', array('isKtvGood'=>$isKtvTable,'uniacid' => $_W['uniacid'], 'is_show' => 1, 'type !=' => $_GPC['type'], 'store_id' => $_GPC['store_id']), array(), '', 'num ASC');
-            $data2 = array();
-            for ($i = 0; $i < count($type); $i++) {
-                $data = array();
-                for ($k = 0; $k < count($list); $k++) {
-                    if ($type[$i]['id'] == $list[$k]['type_id']) {
-                        $data[] = $list[$k];
-                    }
+        $sql = " select * from" . tablename('cjdc_type') . " where  isKtvType={$isKtvTable}  and uniacid={$_W['uniacid']} and store_id={$_GPC['store_id']} and is_open=1 and id in(select type_id from" . tablename('cjdc_goods') . " where uniacid={$_W['uniacid']} and is_show=1 and type !={$_GPC['type']} and store_id={$_GPC['store_id']}) order by order_by asc";
+        $type = pdo_fetchall($sql);
+        $list = pdo_getall('cjdc_goods', array('isKtvGood'=>$isKtvTable,'uniacid' => $_W['uniacid'], 'is_show' => 1, 'type !=' => $_GPC['type'], 'store_id' => $_GPC['store_id']), array(), '', 'num ASC');
+        $data2 = array();
+        for ($i = 0; $i < count($type); $i++) {
+            $data = array();
+            for ($k = 0; $k < count($list); $k++) {
+                if ($type[$i]['id'] == $list[$k]['type_id']) {
+                    $data[] = $list[$k];
                 }
-                $data2[] = array('id' => $type[$i]['id'], 'type_name' => $type[$i]['type_name'], 'good' => $data);
             }
-            echo json_encode($data2);
+            $data2[] = array('id' => $type[$i]['id'], 'type_name' => $type[$i]['type_name'], 'good' => $data);
+        }
+        echo json_encode($data2);
 
     }
 
@@ -885,6 +885,7 @@ class Zh_cjdiancModuleWxapp extends WeModuleWxapp {
                     $data4['money'] = $_GPC['money'];
                     $data4['user_id'] = $_GPC['user_id'];
                     $data4['type'] = 2;
+                    $data4['state'] = 2;
                     $data4['note'] = '外卖订单';
                     $data4['time'] = date('Y-m-d H:i:s');
                     pdo_insert('cjdc_qbmx', $data4);
@@ -991,6 +992,7 @@ class Zh_cjdiancModuleWxapp extends WeModuleWxapp {
                         $data4['money'] = $_GPC['money'];
                         $data4['user_id'] = $_GPC['user_id'];
                         $data4['type'] = 2;
+                        $data4['state'] = 2;
                         $data4['note'] = '店内订单';
                         $data4['time'] = date('Y-m-d H:i:s');
                         pdo_insert('cjdc_qbmx', $data4);
@@ -1051,6 +1053,7 @@ class Zh_cjdiancModuleWxapp extends WeModuleWxapp {
                 $data4['money'] = $_GPC['money'];
                 $data4['user_id'] = $_GPC['user_id'];
                 $data4['type'] = 2;
+                $data4['state'] = 2;
                 $data4['note'] = '店内订单';
                 $data4['time'] = date('Y-m-d H:i:s');
                 pdo_insert('cjdc_qbmx', $data4);
@@ -1116,6 +1119,7 @@ class Zh_cjdiancModuleWxapp extends WeModuleWxapp {
                 $data4['money'] = $_GPC['money'];
                 $data4['user_id'] = $_GPC['user_id'];
                 $data4['type'] = 2;
+                $data4['state'] = 2;
                 $data4['note'] = '当面付订单';
                 $data4['selectType'] =  $_GPC['selectType'];
                 $data4['time'] = date('Y-m-d H:i:s');
@@ -1217,24 +1221,24 @@ class Zh_cjdiancModuleWxapp extends WeModuleWxapp {
         } elseif ($res['pay_type'] == 5) {
             $is_yue = "餐后付款";
         }
-         $style = "<0D0A>";
-          $content = $style;
-          $user = pdo_get('cjdc_user', array('id' => $res['user_id']), 'name');
-                $content .= "              收银台" . $style . $style . $style;
-                $content .= "--------------------------------" . $style;
-                $content .= "金额    ：" . $res['money'] . "元" . $style;
-                $content .= "--------------------------------" . $style;
-                $content .= "付款人  ：" . $user['name'] . $style;
-                $content .= "付款方式  ：" . $is_yue . $style;
-                $content .= "--------------------------------" . $style;
-                $content .= "商家名称：杰豪皇庭酒店"  . $style;
-                $content .= "--------------------------------" . $style;
-                $content .= "付款时间：" . $res['time'] . $style;
-                $content .= "--------------------------------" . $style;
-                $content .= "流水号：" . $res['order_num'] . $style;
-                $content .= "下单时间：" . $res['time'] . $style;
-                $content .= "           店内订单  " . $style . $style;
-                $rst = Dyj::ylydy($dyj['api'], $dyj['token'], $dyj['yy_id'], $dyj['mid'], $content);
+        $style = "<0D0A>";
+        $content = $style;
+        $user = pdo_get('cjdc_user', array('id' => $res['user_id']), 'name');
+        $content .= "              收银台" . $style . $style . $style;
+        $content .= "--------------------------------" . $style;
+        $content .= "金额    ：" . $res['money'] . "元" . $style;
+        $content .= "--------------------------------" . $style;
+        $content .= "付款人  ：" . $user['name'] . $style;
+        $content .= "付款方式  ：" . $is_yue . $style;
+        $content .= "--------------------------------" . $style;
+        $content .= "商家名称：杰豪皇庭酒店"  . $style;
+        $content .= "--------------------------------" . $style;
+        $content .= "付款时间：" . $res['time'] . $style;
+        $content .= "--------------------------------" . $style;
+        $content .= "流水号：" . $res['order_num'] . $style;
+        $content .= "下单时间：" . $res['time'] . $style;
+        $content .= "           店内订单  " . $style . $style;
+        $rst = Dyj::ylydy($dyj['api'], $dyj['token'], $dyj['yy_id'], $dyj['mid'], $content);
     }
 
     //加菜
@@ -1739,10 +1743,10 @@ class Zh_cjdiancModuleWxapp extends WeModuleWxapp {
                         $data2['giftName'] = $dataArray[$i]['title'];
                         $data2['userId'] =  $_GET['user_id'];
                         pdo_insert('cjdc_user_level_gift', $data2);
-                   }
+                    }
                 }
             }
-           // $res = pdo_getall('cjdc_user_level_gift', array('userId' => $_GET['user_id'],'giftLevel' =>  $_GET["userLevel"]));
+            // $res = pdo_getall('cjdc_user_level_gift', array('userId' => $_GET['user_id'],'giftLevel' =>  $_GET["userLevel"]));
             $sql = "select a.*,b.logo,b.end_time,b.status from " . tablename("cjdc_user_level_gift") . " a" . " left join " . tablename("cjdc_shop") . " b on b.id=a.giftId where a.userId='". $_GET['user_id']."' and a.giftLevel=". $_GET["userLevel"];
             $res = pdo_fetchall($sql);
             echo json_encode($res);
@@ -4277,6 +4281,7 @@ class Zh_cjdiancModuleWxapp extends WeModuleWxapp {
                     $tk['order_id'] = $type['id'];
                     $tk['user_id'] = $type['user_id'];
                     $tk['type'] = 1;
+                    $tk['state'] = 2;
                     $tk['note'] = '订单退款';
                     $tk['time'] = date('Y-m-d H:i:s');
                     $tkres = pdo_insert('cjdc_qbmx', $tk);
@@ -4556,6 +4561,7 @@ class Zh_cjdiancModuleWxapp extends WeModuleWxapp {
                 $tk['order_id'] = $type['id'];
                 $tk['user_id'] = $type['user_id'];
                 $tk['type'] = 1;
+                $tk['state'] = 2;
                 $tk['note'] = '订单退款';
                 $tk['time'] = date('Y-m-d H:i:s');
                 $tkres = pdo_insert('cjdc_qbmx', $tk);
@@ -5389,8 +5395,59 @@ class Zh_cjdiancModuleWxapp extends WeModuleWxapp {
     //钱包明细
     public function doPageQbmx() {
         global $_W, $_GPC;
-        $res = pdo_getall('cjdc_qbmx', array('user_id' => $_GPC['user_id']), array(), '', 'id DESC');
-        echo json_encode($res);
+        //$res = pdo_getall('cjdc_qbmx', array('user_id' => $_GPC['user_id']), array(), '', 'id DESC');
+        //echo json_encode($res);
+
+        $pageindex = max(1, intval($_GPC['page']));
+        $pagesize = 30;
+        $data[':user_id'] = $_GPC['user_id'];
+        $sql = "  select id,cz_money as money,note,from_unixtime(time) as time from " . tablename('zh_jdgjb_recharge') . " where user_id=:user_id and state=2  order by time desc";
+        $select_sql = $sql . " LIMIT " . ($pageindex - 1) * $pagesize . "," . $pagesize;
+        $list = pdo_fetchall($select_sql, $data);
+
+        $sql2 = "  select id,money,note,type,time from " . tablename('cjdc_qbmx') . " where user_id=:user_id and isFromJd=0 and order_id=0  order by time desc";
+        $select_sql2 = $sql2 . " LIMIT " . ($pageindex - 1) * $pagesize . "," . $pagesize;
+        //select a.time,a.money,a.note,a.type,b.name,b.img from (select * from ims_cjdc_qbmx where time like '".$selectDate."%' and isFromJd=0 and order_id=0 and note!='当面付订单') a LEFT join ims_cjdc_user b on a.user_id = b.id order by time desc
+        $list2 = pdo_fetchall($select_sql2, $data);
+        $resList = array();
+        for($i=0;$i<count($list);$i++){
+            if( $list[$i]['note']=="在线充值"){
+                $list[$i]['type'] = 1;
+            }else{
+                $list[$i]['type'] = 2;
+            }
+            array_push($resList,$list[$i]);
+        }
+        for($i=0;$i<count($list2);$i++){
+            array_push($resList,$list2[$i]);
+        }
+        echo json_encode($resList);
+    }
+
+
+
+//余额明细
+    public function doPageYelist() {
+        global $_GPC, $_W;
+        $pageindex = max(1, intval($_GPC['page']));
+        $pagesize = 30;
+        $data[':user_id'] = $_GPC['user_id'];
+        $sql = "  select id,cz_money as money,state as type,note,from_unixtime(time) as time from " . tablename('zh_jdgjb_recharge') . " where user_id=:user_id and state=2  order by time desc";
+        $select_sql = $sql . " LIMIT " . ($pageindex - 1) * $pagesize . "," . $pagesize;
+        $list = pdo_fetchall($select_sql, $data);
+
+        $sql2 = "  select id,money,note,type,time from " . tablename('cjdc_qbmx') . " where user_id=:user_id and isFromJd=0 and order_id=0  order by time desc";
+        $select_sql2 = $sql2 . " LIMIT " . ($pageindex - 1) * $pagesize . "," . $pagesize;
+        //select a.time,a.money,a.note,a.type,b.name,b.img from (select * from ims_cjdc_qbmx where time like '".$selectDate."%' and isFromJd=0 and order_id=0 and note!='当面付订单') a LEFT join ims_cjdc_user b on a.user_id = b.id order by time desc
+        $list2 = pdo_fetchall($select_sql2, $data);
+        $resList = array();
+        for($i=0;$i<count($list);$i++){
+            array_push($resList,$list[$i]);
+        }
+        for($i=0;$i<count($list2);$i++){
+            array_push($resList,$list2[$i]);
+        }
+        echo json_encode($resList);
     }
 
     //充值活动
@@ -5478,6 +5535,7 @@ class Zh_cjdiancModuleWxapp extends WeModuleWxapp {
                 $data4['money'] = $_GPC['money'];
                 $data4['user_id'] = $_GPC['user_id'];
                 $data4['type'] = 2;
+                $data4['state'] = 2;
                 $data4['note'] = '购买会员';
                 $data4['time'] = date('Y-m-d H:i:s');
                 pdo_insert('cjdc_qbmx', $data4);
@@ -5972,6 +6030,7 @@ class Zh_cjdiancModuleWxapp extends WeModuleWxapp {
                     $data4['money'] = $_GPC['money'];
                     $data4['user_id'] = $_GPC['user_id'];
                     $data4['type'] = 2;
+                    $data4['state'] = 2;
                     $data4['note'] = '抢购订单';
                     $data4['time'] = date('Y-m-d H:i:s');
                     pdo_insert('cjdc_qbmx', $data4);
@@ -6392,6 +6451,7 @@ class Zh_cjdiancModuleWxapp extends WeModuleWxapp {
             $data4['money'] = $grouporder['money'];
             $data4['user_id'] = $grouporder['user_id'];
             $data4['type'] = 2;
+            $data4['state'] = 2;
             $data4['note'] = '团购订单';
             $data4['time'] = date('Y-m-d H:i:s');
             pdo_insert('cjdc_qbmx', $data4);
@@ -6718,6 +6778,7 @@ class Zh_cjdiancModuleWxapp extends WeModuleWxapp {
                 $tk['money'] = $type['money'];
                 $tk['user_id'] = $type['user_id'];
                 $tk['type'] = 1;
+                $tk['state'] = 2;
                 $tk['note'] = '拼团失败';
                 $tk['time'] = date('Y-m-d H:i:s');
                 $tkres = pdo_insert('cjdc_qbmx', $tk);
@@ -7844,6 +7905,7 @@ class Zh_cjdiancModuleWxapp extends WeModuleWxapp {
                 $tk['money'] = $refund_order['money'];
                 $tk['user_id'] = $refund_order['user_id'];
                 $tk['type'] = 1;
+                $tk['state'] = 2;
                 $tk['note'] = '订单拒绝';
                 $tk['time'] = date('Y-m-d H:i:s');
                 $tkres = pdo_insert('cjdc_qbmx', $tk);
@@ -9221,6 +9283,8 @@ class Zh_cjdiancModuleWxapp extends WeModuleWxapp {
         );
         print_r($this->wechathttpRequest($url, json_encode($data, JSON_UNESCAPED_UNICODE)));
     }
+
+
 
     //查看模板id
     public function doPageTemplateList() {

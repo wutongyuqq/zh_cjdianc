@@ -140,6 +140,7 @@ if ($_GPC['op'] == 'tg') {
 			$tk['money'] = $order['money'];
 			$tk['user_id'] = $order['user_id'];
 			$tk['type'] = 1;
+			$tk['state'] = 1;
 			$tk['note'] = '订单拒绝';
 			$tk['time'] = date('Y-m-d H:i:s');
 			$tkres = pdo_insert('cjdc_qbmx', $tk);
