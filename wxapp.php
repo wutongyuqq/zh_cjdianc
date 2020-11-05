@@ -162,7 +162,10 @@ class Zh_cjdiancModuleWxapp extends WeModuleWxapp {
     //分类下菜品
     public function doPageDishes() {
         global $_W, $_GPC;
-        $res = pdo_getall('cjdc_goods', array('isKtvGood'=>0,'type_id' => $_GPC['type_id'], 'is_show' => 1, 'type !=' => $_GPC['type']), array(), '', array('num asc'));
+        // $res = pdo_getall('cjdc_goods', array('isKtvGood'=>0,'type_id' => $_GPC['type_id'], 'is_show' => 1, 'type !=' => $_GPC['type']), array(), '', array('num asc'));
+
+        $sql = " select * from" . tablename('cjdc_goods') . " where  isKtvGood!=1  and type_id={$_GPC['type_id']} and type!={$_GPC['type']} and is_show=1 order by num asc";
+        $res = pdo_fetchall($sql);
         echo json_encode($res);
     }
 
@@ -181,8 +184,19 @@ class Zh_cjdiancModuleWxapp extends WeModuleWxapp {
         }
 
         $sql = " select * from" . tablename('cjdc_type') . " where  isKtvType={$isKtvTable}  and uniacid={$_W['uniacid']} and store_id={$_GPC['store_id']} and is_open=1 and id in(select type_id from" . tablename('cjdc_goods') . " where uniacid={$_W['uniacid']} and is_show=1 and type !={$_GPC['type']} and store_id={$_GPC['store_id']}) order by order_by asc";
+
         $type = pdo_fetchall($sql);
-        $list = pdo_getall('cjdc_goods', array('isKtvGood'=>$isKtvTable,'uniacid' => $_W['uniacid'], 'is_show' => 1, 'type !=' => $_GPC['type'], 'store_id' => $_GPC['store_id']), array(), '', 'num ASC');
+
+        if($isKtvTable==1) {
+            $list = pdo_getall('cjdc_goods', array('isKtvGood' => $isKtvTable, 'uniacid' => $_W['uniacid'], 'is_show' => 1, 'type !=' => $_GPC['type'], 'store_id' => $_GPC['store_id']), array(), '', 'num ASC');
+        }else{
+
+            $sql = " select * from" . tablename('cjdc_goods') . " where  isKtvGood!=1  and type!={$_GPC['type']} and is_show=1 order by num asc";
+            $list = pdo_fetchall($sql);
+
+            //$list = pdo_getall('cjdc_goods', array('isKtvGood' => $isKtvTable, 'uniacid' => $_W['uniacid'], 'is_show' => 1, 'type !=' => $_GPC['type'], 'store_id' => $_GPC['store_id']), array(), '', 'num ASC');
+
+        }
         $data2 = array();
         for ($i = 0; $i < count($type); $i++) {
             $data = array();
@@ -2757,12 +2771,12 @@ class Zh_cjdiancModuleWxapp extends WeModuleWxapp {
 
     }
 
-    public function doPageHcPrint() {
+    public function doPageHcPrintA() {
         //后厨打印
         global $_W, $_GPC;
         include IA_ROOT . '/addons/zh_cjdianc/print/hcdyj.php';
         $res = pdo_get('cjdc_order', array('id' => $_GPC['order_id']));
-        $sql = "select a.*,b.label_id,a.dishes_id from" . tablename('cjdc_order_goods') . "a left join " . tablename('cjdc_goods') . " b on a.dishes_id=b.id  where a.order_id={$_GPC['order_id']}";
+        $sql = "select a.*,b.label_id,a.dishes_id from " . tablename('cjdc_order_goods') . "a left join " . tablename('cjdc_goods') . " b on a.dishes_id=b.id  where a.order_id={$_GPC['order_id']}";
         $res2 = pdo_fetchall($sql);
         if ($res['type'] == 2) {
             //$table = pdo_get('cjdc_table', array('id' => $res['table_id']));
@@ -2984,6 +2998,84 @@ class Zh_cjdiancModuleWxapp extends WeModuleWxapp {
         }
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
+    public function doPageHcPrint() {
+        //后厨打印
+        global $_W, $_GPC;
+        include IA_ROOT . '/addons/zh_cjdianc/print/hcdyj.php';
+        $res = pdo_get('cjdc_order', array('id' => $_GPC['order_id']));
+        $sql = "select a.*,b.label_id,a.dishes_id from " . tablename('cjdc_order_goods') . "a left join " . tablename('cjdc_goods') . " b on a.dishes_id=b.id  where a.order_id={$_GPC['order_id']}";
+        $res2 = pdo_fetchall($sql);
+        if ($res['type'] == 2) {
+            //$table = pdo_get('cjdc_table', array('id' => $res['table_id']));
+            $sql = " select a.name,b.name as type_name from " . tablename('cjdc_table') . " a left join " . tablename('cjdc_table_type') . " b on a.type_id=b.id where a.id={$res['table_id']}";
+            $table = pdo_fetch($sql);
+        }
+        $print = pdo_get('cjdc_storeset', array('store_id' => $res['store_id']), array('is_jd', 'print_mode'));
+        $result = array();
+
+        //判断打印类型
+        $type = pdo_get('cjdc_storeset', array('store_id' => $res['store_id']));
+
+        //按相同标签组成新的数组
+        foreach ($res2 as $k => $v) {
+            $result[$v['label_id']][] = $v;
+        }
+        foreach ($res2 as $key => $value) {
+            $content1 = '';
+            $resGo = pdo_get('cjdc_goods', array('id' => $res2[0]['dishes_id']));
+
+            $res3 = pdo_getall('cjdc_dyj', array('isKtvDyj'=>$resGo['isKtvGood'],'store_id' => $res['store_id'], 'state' => 1, 'location' => 2, 'tag_id' => $key));
+            $content1 .= "         订单编号  #" . $res['oid'] . "\n\n";
+
+            $content1 .= "       " . $res3[0]['dyj_title'] . "\n\n";
+            $content1 .= "开台时间：" . $res['time'] . "\n\n";
+            if ($res['type'] == 2) {
+                $content1 .= "桌号：" . $table['type_name'] . '(' . $table['name'] . ")\n\n";
+            }
+            $content1 .= "--------------------------------" . "\n";
+            $content1 .= '名称' . str_repeat(" ", 15) . "数量\n\n";
+
+            $content = '';
+
+            $content .= "" . $value['name'] . "\n";
+            if ($value['spec']) {
+                $content .= "" . $value['name'] . "(" . $value['spec'] . ")\n";
+            }
+
+            $content .= str_repeat(" ", 20) . $value['number'] . "\n";
+
+            if ($res['note']) {
+                $content .= "备注：" . $res['note'] . "\n";
+            }
+
+            if ($res3) {
+                $content = $content1 . $content;
+                foreach ($res3 as $key3 => $value3) {
+//易联云
+                    $rst = Hcdyj::ylydy($value3['api'], $value3['token'], $value3['yy_id'], $value3['mid'], $content);
+
+                }
+            }
+        }
+
+
+
+    }
+
+
+
 
     //快服务
     public function doPagekfw() {
